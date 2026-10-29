@@ -239,19 +239,32 @@ export async function syncReminder(S, interactive = false) {
   if (MOBILE) import('./gym-reminder.js').then(m => m.pushGymStatus(S)).catch(() => {})
   try {
     const { LocalNotifications } = await import('@capacitor/local-notifications')
+    const { mealReminderCancelIds, buildMealNotifications } = await import('./meal-reminders.js')
     await LocalNotifications.cancel({ notifications: [
       ...LEGACY_REMINDER_IDS,
       ...Array.from({ length: REMINDER_WINDOW_DAYS }, (_, d) => ({ id: REMINDER_ID_BASE + d })),
       ...Array.from({ length: NUDGE_WINDOW_DAYS }, (_, d) => ({ id: NUDGE_ID_BASE + d })),
+      ...mealReminderCancelIds(),
     ] }).catch(() => {})
     const r = S.reminder
     // The background check (lib/nudge-check.js) follows what is scheduled: nothing, nothing to check.
     const check = notifications => import('./nudge-check.js').then(m => m.armNudgeCheck(S, notifications)).catch(() => {})
-    if (!r?.on) { await check([]); return true }
+    const mealNotes = () => buildMealNotifications(S)
+    if (!r?.on) {
+      // Workout reminder off: still schedule TriFuel meal reminders when they are enabled.
+      let perm = await LocalNotifications.checkPermissions()
+      if (perm.display !== 'granted' && interactive) perm = await LocalNotifications.requestPermissions()
+      if (perm.display === 'granted') {
+        const mealsOnly = mealNotes()
+        if (mealsOnly.length) await LocalNotifications.schedule({ notifications: mealsOnly })
+      }
+      await check([])
+      return perm.display === 'granted'
+    }
     let perm = await LocalNotifications.checkPermissions()
     if (perm.display !== 'granted' && interactive) perm = await LocalNotifications.requestPermissions()
     if (perm.display !== 'granted') { await check([]); return false }
-    const notifications = [...buildReminderNotifications(S), ...buildNudgeNotifications(S)]
+    const notifications = [...buildReminderNotifications(S), ...buildNudgeNotifications(S), ...mealNotes()]
     if (notifications.length) await LocalNotifications.schedule({ notifications })
     await check(notifications)
     return true

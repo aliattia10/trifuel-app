@@ -27,11 +27,14 @@ describe('syncReminder and the background check', () => {
     expect(scheduled.length).toBeGreaterThan(0)
     expect(mocks.arm).toHaveBeenCalledWith(state, scheduled)
   })
-  it('the reminder off, or no permission: the check is handed nothing', async () => {
+  it('the reminder off: the check is handed nothing (meal reminders may still schedule)', async () => {
     await syncReminder(S({ on: false }))
+    expect(mocks.arm.mock.calls.map(c => c[1])).toEqual([[]])
+    mocks.schedule.mockClear()
+    mocks.arm.mockClear()
     mocks.perm = 'denied'
     await syncReminder(S({ on: true, nudge: true, time: '08:00' }))
-    expect(mocks.arm.mock.calls.map(c => c[1])).toEqual([[], []])
+    expect(mocks.arm.mock.calls.map(c => c[1])).toEqual([[]])
     expect(mocks.schedule).not.toHaveBeenCalled()
   })
 })

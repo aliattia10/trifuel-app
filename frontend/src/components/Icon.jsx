@@ -84,6 +84,8 @@ const P = {
   // undo: an arrow curling back to the start
   undo: <><path d="M8.6 14.4 4.2 10l4.4-4.4" /><path d="M4.6 10h9.6a5.4 5.4 0 0 1 0 10.8h-3" /></>,
   bell: <><path d="M6.6 10.4a5.4 5.4 0 0 1 10.8 0c0 4 1.4 5.6 1.4 5.6H5.2s1.4-1.6 1.4-5.6Z" /><path d="M10.1 19.2a2.1 2.1 0 0 0 3.8 0" /></>,
+  // TriFuel Meals tab — a simple bowl (food), stroke-only like the rest of the set.
+  bowl: <><path d="M4.2 11.2c0 4.6 3.5 7.4 7.8 7.4s7.8-2.8 7.8-7.4Z" /><path d="M3.6 11.2h16.8M9.2 5.4c.8 1.4 1.8 2.2 2.8 2.2s2-.8 2.8-2.2" /></>,
   bellSlash: <><path d="M8.1 6.6a5.4 5.4 0 0 1 9.3 3.8c0 4 1.4 5.6 1.4 5.6H9.4M6.6 16H5.2s1.4-1.6 1.4-5.6v-.6" /><path d="M10.1 19.2a2.1 2.1 0 0 0 3.8 0M4 3.6l16 16.8" /></>,
   chevronRight: <path d="m9.6 5.6 6.6 6.4-6.6 6.4" />,
   chevronLeft: <path d="m14.4 5.6-6.6 6.4 6.6 6.4" />,

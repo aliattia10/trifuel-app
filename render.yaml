@@ -1,0 +1,37 @@
+# TriFuel sync API — openGym-based Node backend (JSON profiles + passkeys).
+# This is separate from the older wger Django service (trifuel-api / trifuel-db).
+# openGym stores user state as files under DATA_DIR, so a persistent disk is required.
+services:
+  - type: web
+    name: trifuel-sync
+    runtime: docker
+    plan: starter
+    region: frankfurt
+    branch: trifuel
+    dockerfilePath: ./api/Dockerfile
+    dockerContext: ./api
+    healthCheckPath: /api/health
+    disk:
+      name: trifuel-sync-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: DATA_DIR
+        value: /data
+      - key: RP_NAME
+        value: TriFuel
+      - key: ALLOW_GUEST
+        value: "1"
+      - key: FIRST_USER_ADMIN
+        value: "1"
+      # Set these in the Render dashboard after the first deploy to your public URL:
+      # RP_ID=trifuel-sync.onrender.com
+      # ORIGIN=https://trifuel-sync.onrender.com
+      - key: RP_ID
+        sync: false
+      - key: ORIGIN
+        sync: false
